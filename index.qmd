@@ -5,3 +5,34 @@ title: "."
 This is a Quarto website.
 
 To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+
+```{r}
+library(leaflet)
+library(tidyverse)
+library(tidycensus)
+```
+
+```{r}
+la_county_fips <- "037"
+state_fips <- "06"
+
+# Fetch the ACS data
+education_data <- get_acs(
+  geography = "tract",
+  variables = c(total_population = "B15003_001", bachelors_degree = "B15003_022"),
+  state = state_fips,
+  county = la_county_fips,
+  survey = "acs5",
+  year = 2021, # You can change the year as needed
+  output = "wide"
+)
+
+# Calculate the percentage of people with a bachelor's degree
+education_data <- education_data %>%
+  mutate(perc_bachelors_degree = (bachelors_degreeE / total_populationE) * 100) %>%
+  select(GEOID, NAME, perc_bachelors_degree)
+
+# Display the data
+print(education_data)
+```
+
